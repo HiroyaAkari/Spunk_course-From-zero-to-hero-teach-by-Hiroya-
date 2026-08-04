@@ -1,0 +1,58 @@
+services:
+  mariadb:
+    image: docker.io/bitnamilegacy/mariadb:11.4.6-debian-12-r0
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=moodle
+      - MARIADB_PASSWORD=moodlepass
+      - MARIADB_DATABASE=moodle
+    volumes:
+      - 'mariadb_data:/bitnami/mariadb'
+    logging:
+      driver: splunk
+      options:
+        splunk-url: "https://host.docker.internal:8088"
+        splunk-token: "YOUR_HEC_TOKEN_HERE"
+        splunk-insecureskipverify: "true"
+        splunk-index: "main"
+        splunk-format: "json"
+        splunk-sourcetype: "mariadb"
+
+  moodle:
+    image: docker.io/bitnamilegacy/moodle:5.0.2-debian-12-r2
+    ports:
+      - '8081:8080'
+      - '8443:8443'
+    environment:
+      - MOODLE_DATABASE_HOST=mariadb
+      - MOODLE_DATABASE_PORT_NUMBER=3306
+      - MOODLE_DATABASE_USER=moodle
+      - MOODLE_DATABASE_PASSWORD=moodlepass
+      - MOODLE_DATABASE_NAME=moodle
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MOODLE_USERNAME=admin
+      - MOODLE_PASSWORD=Admin@123!
+      - MOODLE_EMAIL=admin@local.lab
+      - MOODLE_SITE_NAME=LO Practice Lab
+    volumes:
+      - 'moodle_data:/bitnami/moodle'
+      - 'moodledata_data:/bitnami/moodledata'
+    depends_on:
+      - mariadb
+    logging:
+      driver: splunk
+      options:
+        splunk-url: "https://host.docker.internal:8088"
+        splunk-token: "3c28f2da-ad71-489a-8a46-1e49f18ddf45"
+        splunk-insecureskipverify: "true"
+        splunk-index: "main"
+        splunk-format: "json"
+        splunk-sourcetype: "moodle"
+
+volumes:
+  mariadb_data:
+    driver: local
+  moodle_data:
+    driver: local
+  moodledata_data:
+    driver: local
