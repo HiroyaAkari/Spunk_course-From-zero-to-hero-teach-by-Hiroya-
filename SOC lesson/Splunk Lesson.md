@@ -1,4 +1,4 @@
-
+[]()
 ## Module 1 — What Splunk Is
 
 Splunk ingests messy log data and lets you search, visualize, and alert on it using **SPL** (Search Processing Language). Core architecture:
